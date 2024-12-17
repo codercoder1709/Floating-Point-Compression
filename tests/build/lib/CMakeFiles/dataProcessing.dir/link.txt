@@ -1,0 +1,2 @@
+/usr/bin/ar qc libdataProcessing.a CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o
+/usr/bin/ranlib libdataProcessing.a

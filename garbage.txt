@@ -1,0 +1,340 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+constexpr uint32_t lowerBound = 1u << 23;
+
+typedef uint32_t state;
+
+static void initialiseEncoderState(state *st)
+{
+    *st = lowerBound;
+}
+
+static void normaliseEncoder(state *s, uint8_t **outputBuffer, uint32_t upperBound)
+{
+    // maximum value of state if it is exceeded oyte output is taken
+    uint32_t x = *s;
+    if (x > upperBound)
+    {
+        // output buffer ennd address
+        uint8_t *ptr = *outputBuffer;
+        do
+        {
+            // output a byte if s>upperBound
+            *--ptr = (uint8_t)(x & 0xff);
+            x >>= 8;
+        } while (x > upperBound);
+        // outputbuffer update to current location of pointer
+        *outputBuffer = ptr;
+    }
+    *s = x;
+}
+
+// this function is used for encoding of message
+static void encoder(state *s, uint8_t **outputBuffer, uint32_t start, uint32_t frequency, uint32_t scaleBits)
+{
+    // update the state x = ((x/frequency) << scaleBits ) + (x%frequency) + start;
+    const uint32_t precision = 32;
+    uint32_t reciprocal = ((1ull << precision) + frequency - 1) / frequency;
+    uint64_t quotient = ((uint64_t)*s * reciprocal) >> precision;
+    uint32_t remainder = *s - (quotient * frequency);
+    *s = (quotient << scaleBits) + remainder + start;
+}
+
+// this function adds the remaining bits to output buffer
+static void encoderFlush(state *s, uint8_t **outputBuffer)
+{
+    uint32_t x = *s;
+    uint8_t *ptr = *outputBuffer;
+    ptr -= 4;
+
+    for (int i = 0; i < 4; i++)
+        ptr[i] = (uint8_t)(x >> (i * 8));
+
+    *outputBuffer = ptr;
+}
+
+// since the decoding part is "reverse" of the encoding part we will start decoding in reverse
+static void initialiseDecoderState(state *s, uint8_t **outputBuffer)
+{
+    uint32_t x = 0;
+    uint8_t *ptr = *outputBuffer;
+    for (int i = 0; i < 4; i++)
+    {
+        x |= (uint32_t)ptr[i] << (i * 8);
+    }
+    *outputBuffer = ptr + 4;
+    *s = x;
+}
+
+static inline uint32_t getCFforDecodingSymbol(state *s, uint32_t scaleBits)
+{
+    // by doing bitwise or with scalebits-1 we get relevant bits for determining the frequency
+    return *s & ((1u << scaleBits) - 1);
+}
+
+static state normaliseDecoder(state *s, uint8_t **outputBuffer)
+{
+    state x = *s;
+    if (x < lowerBound)
+    {
+        uint8_t *ptr = *outputBuffer;
+        do
+            x = (x << 8) | *ptr++;
+        while (x < lowerBound);
+        *outputBuffer = ptr;
+    }
+
+    return x; // return updated value of state
+}
+
+static void decoder(state *s, uint8_t **outputBuffer, uint32_t start, uint32_t frequency, uint32_t scaleBits)
+{
+    uint32_t mask = (1u << scaleBits) - 1;
+    uint32_t x = *s; // copy state
+
+    x = frequency * (x >> scaleBits) + (x & mask) - start; // decode x, no need to use complex maths like for encoding
+    *s = normaliseDecoder(&x, outputBuffer);               // first we calculate the new stat
+}
+
+typedef struct
+{
+    uint32_t upperBound;
+    uint32_t frequencyInverse;
+    uint32_t bias; // Bias
+    uint16_t frequencyCompliment;
+    uint16_t reciprocalShift; // Reciprocal shift
+} encoderSymbol;
+
+typedef struct
+{
+    uint16_t start;     // Start of range.
+    uint16_t frequency; // Symbol frequency.
+} decoderSymbol;
+
+// Initializes an encoder symbol to start "start" and frequency "frequency"
+static inline void encodingSymbolInitialise(encoderSymbol *symb, uint32_t start, uint32_t frequency, uint32_t scaleBits)
+{
+    assert(scaleBits <= 16);
+    assert(start <= (1u << scaleBits));
+    if (frequency > ((1u << scaleBits) - start))
+        frequency = ((1u << scaleBits) - start);
+
+    symb->upperBound = ((lowerBound >> scaleBits) << 8) * frequency;
+    symb->frequencyCompliment = ((1 << scaleBits) - frequency);
+    if (frequency < 2)
+    {
+        // if frequency = 1 frequency  inverse = frequency so
+        symb->frequencyInverse = ~0u;
+        symb->reciprocalShift = 0;
+        symb->bias = start + (1 << scaleBits) - 1;
+    }
+    else
+    {
+        //
+        uint32_t shift = 0;
+        while (frequency > (1u << shift))
+            shift++;
+
+        symb->frequencyInverse = (uint32_t)(((1ull << (shift + 31)) + frequency - 1) / frequency);
+        symb->reciprocalShift = shift - 1;
+
+        symb->bias = start;
+    }
+}
+// Initialize a decoder symbol to start "start" and frequency "frequency"
+static inline void decodingSymbolInitialise(decoderSymbol *s, uint32_t start, uint32_t frequency)
+{
+    if (start >= (1 << 16))
+        start = (1 << 16) - 1;
+    if (frequency > ((1 << 16) - start))
+        frequency = ((1u << 16) - start);
+    s->start = start;
+    s->frequency = frequency;
+}
+
+static inline void getSymbolFromEncoder(state *s, uint8_t **outputBuffer, encoderSymbol const *sym)
+{
+    if (sym->upperBound == 0)
+        return; // can't encode symbol with frequency=0
+    uint32_t x = *s;
+    normaliseEncoder(&x, outputBuffer, sym->upperBound);
+
+    uint32_t q = (uint32_t)(((uint64_t)x * sym->frequencyInverse) >> 32) >> sym->reciprocalShift;
+    *s = x + sym->bias + q * sym->frequencyCompliment;
+}
+
+// this function is used if symbol table is already present and we don't need to calculate the symbol on the fly
+static inline void decoderWithSymbolTable(state *s, uint8_t **outputBuffer, decoderSymbol const *sym, uint32_t scaleBits)
+{
+    decoder(s, outputBuffer, sym->start, sym->frequency, scaleBits);
+}
+
+// this function is used if the symbol table is not availiable and we have to calculate the symbol
+static inline void decoderWithoutSymbolTable(state *s, uint32_t start, uint32_t frequency, uint32_t scaleBits)
+{
+    uint32_t mask = (1u << scaleBits) - 1;
+    uint32_t x = *s;
+    *s = frequency * (x >> scaleBits) + (x & mask) - start;
+}
+
+static inline void RansDecAdvanceSymbolStep(state *r, decoderSymbol const *sym, uint32_t scaleBits)
+{
+    decoderWithoutSymbolTable(r, sym->start, sym->frequency, scaleBits);
+}
+
+static inline void RansDecRenorm(state *r, uint8_t **outputBuffer)
+{
+    // renormalize
+    uint32_t x = *r;
+    if (x < lowerBound)
+    {
+        uint8_t *ptr = *outputBuffer;
+        do
+            x = (x << 8) | *ptr++;
+        while (x < lowerBound);
+        *outputBuffer = ptr;
+    }
+    *r = x;
+}
+
+const uint32_t prob_bits = 14;
+const uint32_t prob_scale = 1 << prob_bits;
+
+struct SymbolStats
+{
+    uint32_t frequencyArray[256];
+    uint32_t commulativeFrequency[257];
+
+    void calculateFrequency(uint8_t const *inputArray, size_t inputArraySize);
+    void calculateCummulativeFrequency();
+    void normaliseFrequency(uint32_t totalTarget);
+};
+
+void SymbolStats::calculateFrequency(uint8_t const *inputArray, size_t inputArraySize)
+{
+    for (int i = 0; i < 256; i++)
+        frequencyArray[i] = 0;
+
+    for (size_t i = 0; i < inputArraySize; i++)
+        frequencyArray[inputArray[i]]++;
+}
+
+// calculate the cummulative frequency for each symbol
+void SymbolStats::calculateCummulativeFrequency()
+{
+    commulativeFrequency[0] = 0;
+    for (int i = 0; i < 256; i++)
+        commulativeFrequency[i + 1] = commulativeFrequency[i] + frequencyArray[i];
+}
+
+void SymbolStats::normaliseFrequency(uint32_t totalTarget)
+{
+    // totalTarget must be greateer than 256 since the frequency beacuse the frequency for any symbol can't be zero
+    assert(totalTarget >= 256);
+
+    calculateCummulativeFrequency();
+    uint32_t currentTotal = commulativeFrequency[256];
+
+    // resample distribution based on cumulative frequencyArray and totalTarget
+    for (int i = 1; i <= 256; i++)
+        commulativeFrequency[i] = ((uint64_t)totalTarget * commulativeFrequency[i]) / currentTotal;
+
+    // if the cummulativeFrequency of a symbol is changed to zero then we change some things accordingly
+    for (int i = 0; i < 256; i++)
+    {
+        if (frequencyArray[i] && commulativeFrequency[i + 1] == commulativeFrequency[i])
+        {
+            int best_steal = -1;
+            uint32_t best_freq = ~0u;
+
+            // Find best symbol with minimum non-zero frequency to steal from
+            for (int j = 0; j < 256; j++)
+            {
+                uint32_t freq = commulativeFrequency[j + 1] - commulativeFrequency[j];
+                if (freq > 1 && freq < best_freq)
+                {
+                    best_freq = freq;
+                    best_steal = j;
+                }
+            }
+
+            assert(best_steal != -1);
+
+            if (best_steal < i)
+            {
+                for (int j = best_steal + 1; j <= i; j++)
+                    commulativeFrequency[j]--;
+            }
+            else
+            {
+                assert(best_steal > i);
+                for (int j = i + 1; j <= best_steal; j++)
+                    commulativeFrequency[j]++;
+            }
+        }
+    }
+}
+void populateCummulativeFreq2Symbol(uint8_t *cummulativeFreq2Symbol, const SymbolStats &stats, uint32_t prob_scale)
+{
+    for (int s = 0; s < 256; s++)
+    {
+        uint32_t start = stats.commulativeFrequency[s];
+        uint32_t end = stats.commulativeFrequency[s + 1];
+        std::fill(cummulativeFreq2Symbol + start, cummulativeFreq2Symbol + end, s);
+    }
+}
+
+int main()
+{
+    uint8_t inputArray[] ={1,2,3,4,5};
+    int inputSize = sizeof(inputArray)/sizeof(inputArray[0]);
+    SymbolStats stats;
+    stats.calculateFrequency(inputArray, inputSize);
+    stats.normaliseFrequency(prob_scale);
+
+    // getCummulativefrequency from
+    uint8_t cummulativeFreq2Symbol[prob_scale];
+    populateCummulativeFreq2Symbol(cummulativeFreq2Symbol, stats, prob_scale);
+
+    static size_t maxOutputSize = 32 << 20; // 32MB
+    uint8_t *outputBuffer = new uint8_t[maxOutputSize];
+    uint8_t *decodingBytes = new uint8_t[inputSize];
+
+    uint8_t *rans_begin;
+
+    encoderSymbol encodingSymbols[256];
+    decoderSymbol decodingSymbols[256];
+
+    for (int i = 0; i < 256; i++)
+    {
+        encodingSymbolInitialise(&encodingSymbols[i], stats.commulativeFrequency[i], stats.commulativeFrequency[i + 1] - stats.commulativeFrequency[i], prob_bits);
+        decodingSymbolInitialise(&decodingSymbols[i], stats.commulativeFrequency[i], stats.commulativeFrequency[i + 1] - stats.commulativeFrequency[i]);
+    }
+
+    state rans;
+    initialiseEncoderState(&rans);
+
+    uint8_t *ptr = outputBuffer + maxOutputSize;
+
+    for (size_t i = inputSize - 1; i != (size_t)-1; i--)
+    {
+        int s = inputArray[i];
+        getSymbolFromEncoder(&rans, &ptr, &encodingSymbols[s]);
+        if (i == 0)
+            break;
+    }
+    encoderFlush(&rans, &ptr);
+    rans_begin = ptr;
+
+    initialiseDecoderState(&rans, &ptr);
+
+    for (size_t i = 0; i < inputSize; i++)
+    {
+        uint32_t s = cummulativeFreq2Symbol[getCFforDecodingSymbol(&rans, prob_bits)];
+        decodingBytes[i] = (uint8_t)s;
+        decoderWithSymbolTable(&rans, &ptr, &decodingSymbols[s], prob_bits);
+    }
+
+    
+}
