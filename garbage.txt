@@ -338,3 +338,225 @@ int main()
 
     
 }
+
+
+namespace compression{
+    
+
+    void compressorDecompressor::SymbolStats::calculateFrequency(vector<uint8_t>&inputArray, size_t inputArraySize){
+
+    }
+    void compressorDecompressor::SymbolStats::calculateCummulativeFrequency(){
+
+    }
+    void compressorDecompressor::SymbolStats::normaliseFrequency(uint32_t totalTarget){
+
+    }
+    vector<uint8_t> compressorDecompressor::encode(const std::vector<uint8_t> &data){
+        
+    }
+
+    std::vector<uint8_t> compressorDecompressor::decode(std::vector<uint8_t> &data, size_t original_size){
+
+    }
+}
+
+// void compressorDecompressor::countFrequency(const std::vector<uint8_t> &data, uint32_t totalTarget)
+    // {
+    //     // Clear existing frequency data
+    //     freq_table.clear();
+    //     cumulative_freq.clear();
+    //     total_freq = 0;
+
+    //     // Count symbol frequencies
+    //     for (uint8_t byte : data)
+    //         freq_table[byte]++;
+
+    //     // Calculate initial cumulative frequencies
+    //     uint32_t cumul = 0;
+    //     for (int sym = 0; sym < 256; sym++)
+    //     {
+    //         if (freq_table.count(sym) > 0)
+    //         {
+    //             cumulative_freq[sym] = cumul;
+    //             cumul += freq_table[sym];
+    //         }
+    //         else
+    //         {
+    //             // Ensure all symbols have a cumulative frequency entry
+    //             cumulative_freq[sym] = cumul;
+    //         }
+    //     }
+    //     total_freq = cumul;
+
+    //     // Scale cumulative frequencies to target total
+    //     if (total_freq > 0)
+    //     {
+    //         for (int i = 0; i < 256; i++)
+    //         {
+    //             // Prevent potential overflow by using 64-bit multiplication
+    //             cumulative_freq[i] = static_cast<uint32_t>(
+    //                 (static_cast<uint64_t>(totalTarget) * cumulative_freq[i]) / total_freq);
+    //         }
+    //     }
+
+    //     // Ensure unique cumulative frequencies and prevent zero-width symbols
+    //     std::vector<int> problematic_symbols;
+    //     for (int i = 0; i < 255; i++)
+    //     {
+    //         if (freq_table[i] > 0 && cumulative_freq[i] == cumulative_freq[i + 1])
+    //         {
+    //             problematic_symbols.push_back(i);
+    //         }
+    //     }
+
+    //     // Resolve zero-width symbols
+    //     for (int sym : problematic_symbols)
+    //     {
+    //         // Find the best symbol to steal frequency from
+    //         int best_steal = -1;
+    //         uint32_t smallest_gap = UINT32_MAX;
+
+    //         for (int j = 0; j < 256; j++)
+    //         {
+    //             // Skip if frequency is too small
+    //             if (j == sym)
+    //                 continue;
+
+    //             uint32_t curr_gap = cumulative_freq[j + 1] - cumulative_freq[j];
+    //             if (curr_gap > 1 && curr_gap < smallest_gap)
+    //             {
+    //                 smallest_gap = curr_gap;
+    //                 best_steal = j;
+    //             }
+    //         }
+
+    //         // Redistribute frequencies
+    //         if (best_steal != -1)
+    //         {
+    //             if (best_steal < sym)
+    //             {
+    //                 // Decrease frequencies of symbols between best_steal and sym
+    //                 for (int j = best_steal + 1; j <= sym; j++)
+    //                 {
+    //                     cumulative_freq[j]--;
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 // Increase frequencies of symbols between sym and best_steal
+    //                 for (int j = sym + 1; j <= best_steal; j++)
+    //                 {
+    //                     cumulative_freq[j]++;
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     // Final sanity check to ensure no zero-width symbols
+    //     for (int i = 0; i < 255; i++)
+    //     {
+    //         if (freq_table[i] > 0 && cumulative_freq[i] == cumulative_freq[i + 1])
+    //         {
+    //             // Emergency fallback: force a small difference
+    //             cumulative_freq[i + 1]++;
+    //         }
+    //     }
+    // }
+
+    // uint8_t compressorDecompressor::decode_symbol(uint64_t &x)
+    // {
+    //     for (int sym = 0; sym < 256; sym++)
+    //     {
+    //         if (freq_table.count(sym) > 0)
+    //         {
+    //             uint32_t symFreq = freq_table[sym];
+    //             uint32_t symCumul = cumulative_freq[sym];
+    //             uint32_t nextCumul = cumulative_freq[sym + 1];
+
+    //             if (x >= symCumul && x < nextCumul)
+    //             {
+    //                 return sym;
+    //             }
+    //         }
+    //     }
+    //     throw std::runtime_error("Symbol decoding failed");
+    // }
+
+    // std::vector<uint8_t> compressorDecompressor::encode(const std::vector<uint8_t> &data)
+    // {
+    //     countFrequency(data, 1 << 16);
+
+    //     state = 0;
+    //     std::vector<uint8_t> output;
+
+    //     for (auto it = data.rbegin(); it != data.rend(); ++it)
+    //     {
+    //         uint8_t sym = *it;
+    //         uint32_t symFreq = freq_table[sym];
+    //         uint32_t symCumul = cumulative_freq[sym];
+
+    //         while (state >= ((1ull << RANS_NORMALIZATION_BITS) / symFreq) * total_freq)
+    //         {
+    //             output.push_back(state & 0xFF);
+    //             state >>= 8;
+    //         }
+
+    //         state = ((state / symFreq) << RANS_PRECISION) + (state % symFreq) + symCumul;
+    //     }
+
+    //     uint32_t remaining_state = state;
+    //     for (int i = 0; i < 4; ++i)
+    //     {
+    //         output.push_back(remaining_state & 0xFF);
+    //         remaining_state >>= 8;
+    //     }
+
+    //     std::reverse(output.begin(), output.end());
+
+    //     return output;
+    // }
+
+    
+
+    // std::vector<uint8_t> compressorDecompressor::decode(std::vector<uint8_t> &encoded, size_t original_size)
+    // {
+    //     std::vector<uint8_t> decoded;
+    //     decoded.reserve(original_size);
+
+    //     uint64_t state = 0;
+    //     for (int i = 0; i < 4; ++i)
+    //     {
+    //         state = (state << 8) | encoded[encoded.size() - 1 - i];
+    //     }
+
+    //     while (decoded.size() < original_size)
+    //     {
+    //         // Extract the low-precision bits for symbol decoding
+    //         uint64_t x = state & ((1U << RANS_PRECISION) - 1);
+    //         uint8_t sym = decode_symbol(x);
+    //         decoded.push_back(sym);
+
+    //         // Update the state
+    //         uint32_t symFreq = freq_table[sym];
+    //         uint32_t symCumul = cumulative_freq[sym];
+    //         state = (state / symFreq) * total_freq + x + symCumul;
+
+    //         // Renormalization
+    //         while (state < (1ull << RANS_NORMALIZATION_BITS))
+    //         {
+    //             if (!encoded.empty())
+    //             {
+    //                 state = (state << 8) | encoded.back();
+    //                 encoded.pop_back();
+    //             }
+    //             else
+    //             {
+    //                 break;
+    //             }
+    //         }
+    //     }
+
+    //     std::reverse(decoded.begin(), decoded.end());
+    //     return decoded;
+    // }
