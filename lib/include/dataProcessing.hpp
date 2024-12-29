@@ -17,21 +17,22 @@ namespace compression
         std::vector<double> decompress(std::vector<uint8_t> &compressed, size_t originalSize);
 
     private:
-        const static uint32_t TABLE_SIZE = 1024;
+        const static uint32_t TABLE_SIZE = 1 << 16;
         static constexpr uint32_t RANS_PRECISION = 16;
         static constexpr uint32_t RANS_NORMALIZATION_BITS = 31;
         uint64_t fcm[TABLE_SIZE] = {0};
         uint64_t dfcm[TABLE_SIZE] = {0};
-        uint64_t fcm_hash = 0;
-        uint64_t dfcm_hash = 0;
+        uint32_t fcm_hash = 0;
+        uint32_t dfcm_hash = 0;
         uint64_t last_value = 0;
 
         uint64_t getFcmPrediction();
         uint64_t getDfcmPrediction();
+        void reset();
         void updateFcmHash(uint64_t true_value);
         void updateDfcmHash(uint64_t true_value);
         static uint8_t encodeZeroBytes(uint64_t diff);
-        uint64_t toLong(const std::vector<uint8_t>&dst);
+        uint64_t toLong(const std::vector<uint8_t> &dst);
 
         struct SymbolStats
         {
@@ -99,6 +100,6 @@ namespace compression
 //                 int dfcm_hash;
 //                 uint64_t lastValue;
 //         };
-        
+
 //         FcmPredictor predictor1;
 //         DfcmPredictor predictor2;

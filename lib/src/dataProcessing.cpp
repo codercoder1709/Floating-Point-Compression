@@ -9,17 +9,6 @@ using namespace std;
 
 namespace compression
 {
-    uint64_t compressorDecompressor::getFcmPrediction()
-    {
-        return fcm[fcm_hash];
-    }
-    uint64_t compressorDecompressor::getDfcmPrediction()
-    {
-        return dfcm[dfcm_hash] + last_value;
-    }
-
-
-    
     void compressorDecompressor::updateFcmHash(uint64_t true_value)
     {
         fcm[fcm_hash] = true_value;
@@ -32,12 +21,27 @@ namespace compression
         last_value = true_value;
     }
 
-
-
-
+    void compressorDecompressor::reset()
+    {
+        fcm_hash = 0;
+        dfcm_hash = 0;
+        last_value = 0;
+        std::fill_n(fcm, TABLE_SIZE, 0);
+        std::fill_n(dfcm, TABLE_SIZE, 0);
+    }
+    uint64_t compressorDecompressor::getFcmPrediction()
+    {
+        return fcm[fcm_hash];
+    }
+    uint64_t compressorDecompressor::getDfcmPrediction()
+    {
+        return dfcm[dfcm_hash] + last_value;
+    }
 
     uint8_t compressorDecompressor::encodeZeroBytes(uint64_t diff)
     {
+        if (diff == 0)
+            return 7;
         uint8_t leadingZeroBytes = __builtin_clzll(diff) / 8;
         if (leadingZeroBytes >= 4)
             leadingZeroBytes--;
@@ -49,6 +53,8 @@ namespace compression
         uint8_t leadingZeroBytes = __builtin_clzll(diff) / 8;
         if (leadingZeroBytes >= 4)
             leadingZeroBytes--;
+        if (diff == 0)
+            leadingZeroBytes = 7;
 
         int encodedZeroBytes = leadingZeroBytes;
 
@@ -81,7 +87,7 @@ namespace compression
 
         std::vector<uint8_t> compressed;
 
-        for (size_t i = 0; i < input.size(); i+=2)
+        for (size_t i = 0; i < input.size(); i += 2)
         {
             uint64_t first_true_value = *reinterpret_cast<const uint64_t *>(&input[i]);
 
@@ -93,8 +99,6 @@ namespace compression
             updateFcmHash(first_true_value);
             updateDfcmHash(first_true_value);
 
-            cout<<fcm_hash<<" "<<dfcm_hash+last_value<<" "<<endl;
-
             uint64_t second_true_value = *reinterpret_cast<const uint64_t *>(&input[i + 1]);
 
             uint64_t second_fcm_prediction = getFcmPrediction();
@@ -105,31 +109,36 @@ namespace compression
             updateFcmHash(second_true_value);
             updateDfcmHash(second_true_value);
 
-            //cout<<(first_true_value ^ first_fcm_prediction)<<" "<<(first_true_value ^ first_dfcm_difference_prediction)<<" "<<(second_true_value ^ second_fcm_prediction)<<" "<<(second_true_value ^ second_dfcm_difference_prediction)<<endl;;
             uint8_t code = 0;
             if (first_use_fcm)
             {
+
                 uint8_t zeroBytes = encodeZeroBytes(first_true_value ^ first_fcm_prediction);
+                // cout<<1<<" "<<(int)zeroBytes<<endl;
                 code |= zeroBytes << 4;
             }
             else
             {
                 code |= 0x80;
+
                 int zeroBytes = encodeZeroBytes(first_true_value ^ first_dfcm_difference_prediction);
+                // cout<<2<<" "<<zeroBytes<<endl;
                 code |= zeroBytes << 4;
             }
             if (second_use_fcm)
             {
+
                 int zeroBytes = encodeZeroBytes(second_true_value ^ second_fcm_prediction);
+                // cout<<3<<" "<<zeroBytes<<endl;
                 code |= zeroBytes;
             }
             else
             {
                 code |= 0x08;
                 int zeroBytes = encodeZeroBytes(second_true_value ^ second_dfcm_difference_prediction);
+                // cout<<4<<" "<<zeroBytes<<endl;
                 code |= zeroBytes;
             }
-
             compressed.push_back(code);
 
             if (first_use_fcm)
@@ -153,8 +162,6 @@ namespace compression
                 std::vector<uint8_t> byteArrayE = toByteArray(second_true_value ^ second_dfcm_difference_prediction);
                 compressed.insert(compressed.end(), byteArrayE.begin(), byteArrayE.end());
             }
-
-            
         }
 
         if (input.size() % 2 != 0)
@@ -162,24 +169,26 @@ namespace compression
             compressed.push_back(0x00);
         }
 
-        // auto encoded = encode(compressed);
-        return compressed;
+        RANS rans(compressed);
+
+        auto encoded = rans.encode();
+        return encoded;
     }
 
     std::vector<double> compressorDecompressor::decompress(std::vector<uint8_t> &compressed, size_t originalSize)
     {
-
-        // auto fpcCpmpreesed = decode(compressed, compressed.size());
-        auto fpcCpmpreesed = compressed;
-        reverse(fpcCpmpreesed.begin(),fpcCpmpreesed.end());
+        
+        auto fpcCpmpreesed = rans.decode(compressed, compressed.size());
+        //auto fpcCpmpreesed = compressed;
 
         std::vector<double> decompressed;
         size_t bufferIndex = 0;
-
+        reset();
         for (size_t i = 0; i < originalSize; i += 2)
         {
             uint8_t header = fpcCpmpreesed[bufferIndex++];
             uint64_t prediction;
+
             if ((header & 0x80) != 0)
             {
                 prediction = getDfcmPrediction();
@@ -188,6 +197,7 @@ namespace compression
             {
                 prediction = getFcmPrediction();
             }
+             
             int numZeroBytes = (header & 0x70) >> 4;
             if (numZeroBytes > 3)
             {
@@ -202,6 +212,8 @@ namespace compression
             }
             int64_t diff = toLong(dst);
             int64_t actual = prediction ^ diff;
+
+            //cout<<diff<<" "<<actual<<endl;
 
             updateFcmHash(actual);
             updateDfcmHash(actual);
@@ -218,8 +230,9 @@ namespace compression
 
             // Calculate numZeroBytes for second value
             numZeroBytes = (header & 0x07);
-            if (numZeroBytes > 3) numZeroBytes++;
-            
+            if (numZeroBytes > 3)
+                numZeroBytes++;
+
             // Extract bytes for second diff
             diffSize = 8 - numZeroBytes;
             dst.resize(diffSize);

@@ -7,19 +7,8 @@ int main(){
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(1.0, 10.0);
 
-    std::vector<double> originalData = {
-            1.234, 5.678,
-            9.012, 3.456,
-            7.890, 2.345,
-            5.543,7.234,
-            3.456,2.456,
-            1.234, 5.678,
-            9.012, 3.456,
-            7.890, 2.345,
-            5.543,7.234,
-            3.456,2.456
-        };
-    // for (auto& num : originalData) num = dis(gen);
+    std::vector<double> originalData(1000);
+    for (auto& num : originalData) num = dis(gen);
     compression::compressorDecompressor compressor_decompressor;
     auto compressed = compressor_decompressor.compress(originalData);
 
