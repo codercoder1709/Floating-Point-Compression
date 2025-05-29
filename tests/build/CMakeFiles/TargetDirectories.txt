@@ -1,8 +1,0 @@
-/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/tests/build/CMakeFiles/test_lib.dir
-/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/tests/build/CMakeFiles/test.dir
-/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/tests/build/CMakeFiles/edit_cache.dir
-/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/tests/build/CMakeFiles/rebuild_cache.dir
-/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/tests/build/lib/CMakeFiles/dataProcessing.dir
-/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/tests/build/lib/CMakeFiles/test.dir
-/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/tests/build/lib/CMakeFiles/edit_cache.dir
-/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/tests/build/lib/CMakeFiles/rebuild_cache.dir

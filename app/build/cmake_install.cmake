@@ -1,4 +1,4 @@
-# Install script for directory: /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app
+# Install script for directory: /home/uditagrawal/Documents/Floating-Point-Compression/app
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,14 +44,14 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib/cmake_install.cmake")
+  include("/home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib/cmake_install.cmake")
 
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/install_local_manifest.txt"
+  file(WRITE "/home/uditagrawal/Documents/Floating-Point-Compression/app/build/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -67,6 +67,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/home/uditagrawal/Documents/Floating-Point-Compression/app/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

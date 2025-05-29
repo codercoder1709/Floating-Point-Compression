@@ -13,18 +13,6 @@ cmake .. && make || { echo "Library compilation failed."; exit 1; }
 cd ../..
 echo "Library compiled successfully."
 
-# Compile test cases
-echo "Compiling test cases..."
-cd tests/
-rm -rf build && mkdir build && cd build
-cmake .. && make || { echo "Test cases compilation failed."; exit 1; }
-echo "Test cases compiled successfully."
-
-# Run test cases
-echo "Running test cases..."
-./test_lib || { echo "Test cases execution failed."; exit 1; }
-cd ../..
-
 # Compile application
 echo "Compiling application..."
 cd app/

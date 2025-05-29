@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Create the static library
 add_library(dataProcessing STATIC
     src/dataProcessing.cpp
+    src/fileReader.cpp
 )
 
 # Add include directories for the library

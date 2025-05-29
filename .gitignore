@@ -1,0 +1,9 @@
+dataset/largeVolume/
+build/
+*.o
+*.a
+*.so
+*.swp
+*.log
+*.cmake
+*.DS_Store

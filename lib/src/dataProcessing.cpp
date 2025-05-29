@@ -1,11 +1,210 @@
 #include "dataProcessing.hpp"
-#include "ranslassan.cpp"
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
 #include <memory>
 using namespace std;
+
+namespace RANS
+{
+    void SymbolStats::calculateFrequency(const vector<uint8_t> &inputArray)
+    {
+        for (uint8_t byte : inputArray)
+            frequencyArray[byte]++;
+    }
+
+    void SymbolStats::calculateCummulativeFrequency()
+    {
+        commulativeFrequency[0] = 0;
+        for (int i = 0; i < 256; i++)
+            commulativeFrequency[i + 1] = commulativeFrequency[i] + frequencyArray[i];
+    }
+
+    void SymbolStats::normaliseFrequency(uint32_t totalTarget)
+    {
+        assert(totalTarget >= 256);
+
+        calculateCummulativeFrequency();
+        uint32_t currentTotal = commulativeFrequency[256];
+
+        for (int i = 1; i <= 256; i++)
+            commulativeFrequency[i] = ((uint64_t)totalTarget * commulativeFrequency[i]) / currentTotal;
+
+        for (int i = 0; i < 256; i++)
+        {
+            if (frequencyArray[i] && commulativeFrequency[i + 1] == commulativeFrequency[i])
+            {
+                int best_steal = -1;
+                uint32_t best_freq = ~0u;
+
+                for (int j = 0; j < 256; j++)
+                {
+                    uint32_t freq = commulativeFrequency[j + 1] - commulativeFrequency[j];
+                    if (freq > 1 && freq < best_freq)
+                    {
+                        best_freq = freq;
+                        best_steal = j;
+                    }
+                }
+
+                assert(best_steal != -1);
+
+                if (best_steal < i)
+                {
+                    for (int j = best_steal + 1; j <= i; j++)
+                        commulativeFrequency[j]--;
+                }
+                else
+                {
+                    assert(best_steal > i);
+                    for (int j = i + 1; j <= best_steal; j++)
+                        commulativeFrequency[j]++;
+                }
+            }
+        }
+    }
+
+    static void initialiseEncoderState(state *st)
+    {
+        *st = lowerBound;
+    }
+
+    static void normaliseEncoder(state *s, vector<uint8_t>::iterator &outputBuffer, uint32_t upperBound)
+    {
+        uint32_t x = *s;
+        if (x > upperBound)
+        {
+            do
+            {
+                --outputBuffer;
+                *outputBuffer = (uint8_t)(x & 0xff);
+                x >>= 8;
+            } while (x > upperBound);
+        }
+        *s = x;
+    }
+
+    static void encoder(state *s, vector<uint8_t>::iterator &outputBuffer, uint32_t start, uint32_t frequency, uint32_t scaleBits)
+    {
+        const uint32_t precision = 32;
+        uint32_t reciprocal = ((1ull << precision) + frequency - 1) / frequency;
+        uint64_t quotient = ((uint64_t)*s * reciprocal) >> precision;
+        uint32_t remainder = *s - (quotient * frequency);
+        *s = (quotient << scaleBits) + remainder + start;
+    }
+
+    static void encoderFlush(state *s, vector<uint8_t>::iterator &outputBuffer)
+    {
+        uint32_t x = *s;
+        outputBuffer -= 4;
+
+        for (int i = 0; i < 4; i++)
+            outputBuffer[i] = (uint8_t)(x >> (i * 8));
+    }
+
+    static void initialiseDecoderState(state *s, vector<uint8_t>::iterator &outputBuffer)
+    {
+        uint32_t x = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            x |= (uint32_t)outputBuffer[i] << (i * 8);
+        }
+        outputBuffer += 4;
+        *s = x;
+    }
+
+    static uint32_t getCFforDecodingSymbol(state *s, uint32_t scaleBits)
+    {
+        return *s & ((1u << scaleBits) - 1);
+    }
+
+    static state normaliseDecoder(state *s, vector<uint8_t>::iterator &outputBuffer)
+    {
+        state x = *s;
+        if (x < lowerBound)
+        {
+            do
+            {
+                x = (x << 8) | *outputBuffer;
+                ++outputBuffer;
+            } while (x < lowerBound);
+        }
+
+        return x;
+    }
+
+    static void decoder(state *s, vector<uint8_t>::iterator &outputBuffer, uint32_t start, uint32_t frequency, uint32_t scaleBits)
+    {
+        uint32_t mask = (1u << scaleBits) - 1;
+        uint32_t x = *s;
+
+        x = frequency * (x >> scaleBits) + (x & mask) - start;
+        *s = normaliseDecoder(&x, outputBuffer);
+    }
+
+    static inline void getSymbolFromEncoder(state *s, vector<uint8_t>::iterator &outputBuffer, encoderSymbol const *sym)
+    {
+        if (sym->upperBound == 0)
+            return;
+        uint32_t x = *s;
+        normaliseEncoder(&x, outputBuffer, sym->upperBound);
+
+        uint32_t q = (uint32_t)(((uint64_t)x * sym->frequencyInverse) >> 32) >> sym->reciprocalShift;
+        *s = x + sym->bias + q * sym->frequencyCompliment;
+    }
+
+    static inline void decoderWithSymbolTable(state *s, vector<uint8_t>::iterator &outputBuffer, decoderSymbol const *sym, uint32_t scaleBits)
+    {
+        decoder(s, outputBuffer, sym->start, sym->frequency, scaleBits);
+    }
+
+    vector<uint8_t> populateCummulativeFreq2Symbol(const SymbolStats &stats, uint32_t prob_scale)
+    {
+        vector<uint8_t> cummulativeFreq2Symbol(prob_scale);
+        for (int s = 0; s < 256; s++)
+        {
+            uint32_t start = stats.commulativeFrequency[s];
+            uint32_t end = stats.commulativeFrequency[s + 1];
+            std::fill(cummulativeFreq2Symbol.begin() + start, cummulativeFreq2Symbol.begin() + end, s);
+        }
+        return cummulativeFreq2Symbol;
+    }
+
+    vector<uint8_t> RANS::encode()
+    {
+        initialiseEncoderState(&rans);
+
+        ptr = outputBuffer.end();
+
+        for (auto i = inputArray.rbegin(); i != inputArray.rend(); ++i)
+        {
+            getSymbolFromEncoder(&rans, ptr, &encodingSymbols[*i]);
+        }
+
+        encoderFlush(&rans, ptr);
+        rans_begin = ptr;
+
+        return vector<uint8_t>(rans_begin, outputBuffer.end());
+    }
+
+    vector<uint8_t> RANS::decode(vector<uint8_t> &encoded, size_t original_size)
+    {
+
+        auto ptr = encoded.begin();
+        initialiseDecoderState(&rans, ptr);
+
+        for (size_t i = 0; i < original_size; i++)
+        {
+            uint32_t s = cummulativeFreq2Symbol[getCFforDecodingSymbol(&rans, prob_bits)];
+            decodingBytes[i] = (uint8_t)s;
+            decoderWithSymbolTable(&rans, ptr, &decodingSymbols[s], prob_bits);
+            
+        }
+        return decodingBytes;
+    }
+
+}
 
 namespace compression
 {
@@ -82,7 +281,7 @@ namespace compression
         return result;
     }
 
-    std::vector<uint8_t> compressorDecompressor::compress(const std::vector<double> &input)
+    std::pair<std::vector<uint8_t>, size_t> compressorDecompressor::compress(const std::vector<float> &input)
     {
 
         std::vector<uint8_t> compressed;
@@ -114,7 +313,6 @@ namespace compression
             {
 
                 uint8_t zeroBytes = encodeZeroBytes(first_true_value ^ first_fcm_prediction);
-                // cout<<1<<" "<<(int)zeroBytes<<endl;
                 code |= zeroBytes << 4;
             }
             else
@@ -122,21 +320,18 @@ namespace compression
                 code |= 0x80;
 
                 int zeroBytes = encodeZeroBytes(first_true_value ^ first_dfcm_difference_prediction);
-                // cout<<2<<" "<<zeroBytes<<endl;
                 code |= zeroBytes << 4;
             }
             if (second_use_fcm)
             {
 
                 int zeroBytes = encodeZeroBytes(second_true_value ^ second_fcm_prediction);
-                // cout<<3<<" "<<zeroBytes<<endl;
                 code |= zeroBytes;
             }
             else
             {
                 code |= 0x08;
                 int zeroBytes = encodeZeroBytes(second_true_value ^ second_dfcm_difference_prediction);
-                // cout<<4<<" "<<zeroBytes<<endl;
                 code |= zeroBytes;
             }
             compressed.push_back(code);
@@ -169,19 +364,18 @@ namespace compression
             compressed.push_back(0x00);
         }
 
-        RANS rans(compressed);
+        rans = new RANS::RANS(compressed);
 
-        auto encoded = rans.encode();
-        return encoded;
+        auto encoded = rans->encode();
+        return {encoded, compressed.size()};
     }
 
-    std::vector<double> compressorDecompressor::decompress(std::vector<uint8_t> &compressed, size_t originalSize)
+    std::vector<float> compressorDecompressor::decompress(std::vector<uint8_t> &compressed, size_t originalSize, size_t compressedSize)
     {
-        
-        auto fpcCpmpreesed = rans.decode(compressed, compressed.size());
-        //auto fpcCpmpreesed = compressed;
 
-        std::vector<double> decompressed;
+        auto fpcCpmpreesed = rans->decode(compressed, compressedSize);
+
+        std::vector<float> decompressed;
         size_t bufferIndex = 0;
         reset();
         for (size_t i = 0; i < originalSize; i += 2)
@@ -197,7 +391,7 @@ namespace compression
             {
                 prediction = getFcmPrediction();
             }
-             
+
             int numZeroBytes = (header & 0x70) >> 4;
             if (numZeroBytes > 3)
             {
@@ -213,11 +407,9 @@ namespace compression
             int64_t diff = toLong(dst);
             int64_t actual = prediction ^ diff;
 
-            //cout<<diff<<" "<<actual<<endl;
-
             updateFcmHash(actual);
             updateDfcmHash(actual);
-            decompressed.push_back(*reinterpret_cast<double *>(&actual));
+            decompressed.push_back(*reinterpret_cast<float *>(&actual));
 
             if ((header & 0x08) != 0)
             {
@@ -227,8 +419,6 @@ namespace compression
             {
                 prediction = getFcmPrediction();
             }
-
-            // Calculate numZeroBytes for second value
             numZeroBytes = (header & 0x07);
             if (numZeroBytes > 3)
                 numZeroBytes++;
@@ -253,68 +443,9 @@ namespace compression
             // Update predictors and decode the second value
             updateFcmHash(actual);
             updateDfcmHash(actual);
-            decompressed.push_back(*reinterpret_cast<double *>(&actual));
+            decompressed.push_back(*reinterpret_cast<float *>(&actual));
         }
 
         return decompressed;
     }
-
 }
-// void compressorDecompressor::predictorState::reset()
-// {
-//     std::fill_n(fcm, TABLE_SIZE, 0);
-//     std::fill_n(dfcm, TABLE_SIZE, 0);
-//     fcm_hash = 0;
-//     dfcm_hash = 0;
-//     last_value = 0;
-// }
-// long dBits = Double.doubleToLongBits(doubles[i]);
-//             long diff1d = predictor1.getPrediction() ^ dBits;
-//             long diff2d = predictor2.getPrediction() ^ dBits;
-
-//             boolean predictor1BetterForD = Long.numberOfLeadingZeros(diff1d) >= Long.numberOfLeadingZeros(diff2d);
-
-//             predictor1.update(dBits);
-//             predictor2.update(dBits);
-
-//             long eBits = Double.doubleToLongBits(doubles[i + 1]);
-//             long diff1e = predictor1.getPrediction() ^ eBits;
-//             long diff2e = predictor2.getPrediction() ^ eBits;
-
-//             boolean predictor1BetterForE = Long.numberOfLeadingZeros(diff1e) >= Long.numberOfLeadingZeros(diff2e);
-
-//             predictor1.update(eBits);
-//             predictor2.update(eBits);
-
-// uint8_t code = (i % 2 == 0)
-//                    ? (fpcCpmpreesed[bufferIndex] >> 4)
-//                    : (fpcCpmpreesed[bufferIndex] & 0x0F);
-
-// int leading_zero_bytes = code & 0b111;
-// bool switch_predictor = (code & 0b1000);
-
-// uint64_t remainder = 0;
-// int remainder_bytes = 8 - leading_zero_bytes;
-// for (int j = 0; j < remainder_bytes; ++j)
-// {
-//     remainder = (remainder << 8) | fpcCpmpreesed[bufferIndex + 1 + j];
-// }
-
-// uint64_t prediction = switch_predictor ? fcm[fcm_hash] : dfcm[dfcm_hash] + last_value;
-
-// uint64_t first_true_value = prediction ^ remainder;
-// decompressed.push_back(*reinterpret_cast<double *>(&first_true_value));
-
-// bufferIndex += 1 + remainder_bytes;
-
-// fcm[fcm_hash] = first_true_value;
-// fcm_hash = ((fcm_hash << 6) ^ (first_true_value >> 48)) & (TABLE_SIZE - 1);
-
-// if (i > 0)
-// {
-//     uint64_t difference = first_true_value - last_value;
-//     dfcm[dfcm_hash] = difference;
-//     dfcm_hash = ((dfcm_hash << 2) ^ (difference >> 40)) & (TABLE_SIZE - 1);
-// }
-
-// last_value = first_true_value;

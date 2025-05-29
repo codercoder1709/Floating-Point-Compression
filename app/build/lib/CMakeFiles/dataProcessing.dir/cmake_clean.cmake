@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o"
   "CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o.d"
+  "CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o"
+  "CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o.d"
   "libdataProcessing.a"
   "libdataProcessing.pdb"
 )

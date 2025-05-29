@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app
+CMAKE_SOURCE_DIR = /home/uditagrawal/Documents/Floating-Point-Compression/app
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build
+CMAKE_BINARY_DIR = /home/uditagrawal/Documents/Floating-Point-Compression/app/build
 
 # Include any dependencies generated for this target.
 include lib/CMakeFiles/dataProcessing.dir/depend.make
@@ -73,42 +73,58 @@ lib/CMakeFiles/dataProcessing.dir/codegen:
 .PHONY : lib/CMakeFiles/dataProcessing.dir/codegen
 
 lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o: lib/CMakeFiles/dataProcessing.dir/flags.make
-lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o: /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib/src/dataProcessing.cpp
+lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o: /home/uditagrawal/Documents/Floating-Point-Compression/lib/src/dataProcessing.cpp
 lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o: lib/CMakeFiles/dataProcessing.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o"
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o -MF CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o.d -o CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o -c /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib/src/dataProcessing.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/uditagrawal/Documents/Floating-Point-Compression/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o"
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o -MF CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o.d -o CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o -c /home/uditagrawal/Documents/Floating-Point-Compression/lib/src/dataProcessing.cpp
 
 lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.i"
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib/src/dataProcessing.cpp > CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.i
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/uditagrawal/Documents/Floating-Point-Compression/lib/src/dataProcessing.cpp > CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.i
 
 lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.s"
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib/src/dataProcessing.cpp -o CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.s
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/uditagrawal/Documents/Floating-Point-Compression/lib/src/dataProcessing.cpp -o CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.s
+
+lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o: lib/CMakeFiles/dataProcessing.dir/flags.make
+lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o: /home/uditagrawal/Documents/Floating-Point-Compression/lib/src/fileReader.cpp
+lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o: lib/CMakeFiles/dataProcessing.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/uditagrawal/Documents/Floating-Point-Compression/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o"
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o -MF CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o.d -o CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o -c /home/uditagrawal/Documents/Floating-Point-Compression/lib/src/fileReader.cpp
+
+lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/dataProcessing.dir/src/fileReader.cpp.i"
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/uditagrawal/Documents/Floating-Point-Compression/lib/src/fileReader.cpp > CMakeFiles/dataProcessing.dir/src/fileReader.cpp.i
+
+lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/dataProcessing.dir/src/fileReader.cpp.s"
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/uditagrawal/Documents/Floating-Point-Compression/lib/src/fileReader.cpp -o CMakeFiles/dataProcessing.dir/src/fileReader.cpp.s
 
 # Object files for target dataProcessing
 dataProcessing_OBJECTS = \
-"CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o"
+"CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o" \
+"CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o"
 
 # External object files for target dataProcessing
 dataProcessing_EXTERNAL_OBJECTS =
 
 lib/libdataProcessing.a: lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o
+lib/libdataProcessing.a: lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o
 lib/libdataProcessing.a: lib/CMakeFiles/dataProcessing.dir/build.make
 lib/libdataProcessing.a: lib/CMakeFiles/dataProcessing.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libdataProcessing.a"
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/dataProcessing.dir/cmake_clean_target.cmake
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/dataProcessing.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/uditagrawal/Documents/Floating-Point-Compression/app/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libdataProcessing.a"
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/dataProcessing.dir/cmake_clean_target.cmake
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/dataProcessing.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 lib/CMakeFiles/dataProcessing.dir/build: lib/libdataProcessing.a
 .PHONY : lib/CMakeFiles/dataProcessing.dir/build
 
 lib/CMakeFiles/dataProcessing.dir/clean:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/dataProcessing.dir/cmake_clean.cmake
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib && $(CMAKE_COMMAND) -P CMakeFiles/dataProcessing.dir/cmake_clean.cmake
 .PHONY : lib/CMakeFiles/dataProcessing.dir/clean
 
 lib/CMakeFiles/dataProcessing.dir/depend:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib/CMakeFiles/dataProcessing.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/uditagrawal/Documents/Floating-Point-Compression/app /home/uditagrawal/Documents/Floating-Point-Compression/lib /home/uditagrawal/Documents/Floating-Point-Compression/app/build /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib/CMakeFiles/dataProcessing.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : lib/CMakeFiles/dataProcessing.dir/depend
 

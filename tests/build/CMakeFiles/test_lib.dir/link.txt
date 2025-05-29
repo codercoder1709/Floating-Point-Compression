@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,--dependency-file,CMakeFiles/test_lib.dir/link.d CMakeFiles/test_lib.dir/src/test_lib.cpp.o -o test_lib  lib/libdataProcessing.a /usr/lib/libgtest_main.so.1.15.2 /usr/lib/libgtest.so.1.15.2

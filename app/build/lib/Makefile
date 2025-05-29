@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app
+CMAKE_SOURCE_DIR = /home/uditagrawal/Documents/Floating-Point-Compression/app
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build
+CMAKE_BINARY_DIR = /home/uditagrawal/Documents/Floating-Point-Compression/app/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/CMakeFiles /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/lib//CMakeFiles/progress.marks
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build/CMakeFiles 0
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/uditagrawal/Documents/Floating-Point-Compression/app/build/CMakeFiles /home/uditagrawal/Documents/Floating-Point-Compression/app/build/lib//CMakeFiles/progress.marks
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/uditagrawal/Documents/Floating-Point-Compression/app/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/clean
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 lib/CMakeFiles/dataProcessing.dir/rule:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/dataProcessing.dir/rule
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/CMakeFiles/dataProcessing.dir/rule
 .PHONY : lib/CMakeFiles/dataProcessing.dir/rule
 
 # Convenience name for target.
@@ -127,7 +127,7 @@ dataProcessing: lib/CMakeFiles/dataProcessing.dir/rule
 
 # fast build rule for target.
 dataProcessing/fast:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/build
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/build
 .PHONY : dataProcessing/fast
 
 src/dataProcessing.o: src/dataProcessing.cpp.o
@@ -135,7 +135,7 @@ src/dataProcessing.o: src/dataProcessing.cpp.o
 
 # target to build an object file
 src/dataProcessing.cpp.o:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.o
 .PHONY : src/dataProcessing.cpp.o
 
 src/dataProcessing.i: src/dataProcessing.cpp.i
@@ -143,7 +143,7 @@ src/dataProcessing.i: src/dataProcessing.cpp.i
 
 # target to preprocess a source file
 src/dataProcessing.cpp.i:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.i
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.i
 .PHONY : src/dataProcessing.cpp.i
 
 src/dataProcessing.s: src/dataProcessing.cpp.s
@@ -151,8 +151,32 @@ src/dataProcessing.s: src/dataProcessing.cpp.s
 
 # target to generate assembly for a file
 src/dataProcessing.cpp.s:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.s
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.s
 .PHONY : src/dataProcessing.cpp.s
+
+src/fileReader.o: src/fileReader.cpp.o
+.PHONY : src/fileReader.o
+
+# target to build an object file
+src/fileReader.cpp.o:
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o
+.PHONY : src/fileReader.cpp.o
+
+src/fileReader.i: src/fileReader.cpp.i
+.PHONY : src/fileReader.i
+
+# target to preprocess a source file
+src/fileReader.cpp.i:
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.i
+.PHONY : src/fileReader.cpp.i
+
+src/fileReader.s: src/fileReader.cpp.s
+.PHONY : src/fileReader.s
+
+# target to generate assembly for a file
+src/fileReader.cpp.s:
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(MAKE) $(MAKESILENT) -f lib/CMakeFiles/dataProcessing.dir/build.make lib/CMakeFiles/dataProcessing.dir/src/fileReader.cpp.s
+.PHONY : src/fileReader.cpp.s
 
 # Help Target
 help:
@@ -166,6 +190,9 @@ help:
 	@echo "... src/dataProcessing.o"
 	@echo "... src/dataProcessing.i"
 	@echo "... src/dataProcessing.s"
+	@echo "... src/fileReader.o"
+	@echo "... src/fileReader.i"
+	@echo "... src/fileReader.s"
 .PHONY : help
 
 
@@ -177,6 +204,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/uditagrawal/Documents/Floating-Point-Compression/app/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib
+CMAKE_SOURCE_DIR = /home/uditagrawal/Documents/Floating-Point-Compression/lib
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib/build
+CMAKE_BINARY_DIR = /home/uditagrawal/Documents/Floating-Point-Compression/lib/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib/build/CMakeFiles /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/uditagrawal/Documents/Floating-Point-Compression/lib/build/CMakeFiles /home/uditagrawal/Documents/Floating-Point-Compression/lib/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/uditagrawal/Documents/Floating-Point-Compression/lib/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -153,6 +153,30 @@ src/dataProcessing.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/dataProcessing.dir/build.make CMakeFiles/dataProcessing.dir/src/dataProcessing.cpp.s
 .PHONY : src/dataProcessing.cpp.s
 
+src/fileReader.o: src/fileReader.cpp.o
+.PHONY : src/fileReader.o
+
+# target to build an object file
+src/fileReader.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dataProcessing.dir/build.make CMakeFiles/dataProcessing.dir/src/fileReader.cpp.o
+.PHONY : src/fileReader.cpp.o
+
+src/fileReader.i: src/fileReader.cpp.i
+.PHONY : src/fileReader.i
+
+# target to preprocess a source file
+src/fileReader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dataProcessing.dir/build.make CMakeFiles/dataProcessing.dir/src/fileReader.cpp.i
+.PHONY : src/fileReader.cpp.i
+
+src/fileReader.s: src/fileReader.cpp.s
+.PHONY : src/fileReader.s
+
+# target to generate assembly for a file
+src/fileReader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/dataProcessing.dir/build.make CMakeFiles/dataProcessing.dir/src/fileReader.cpp.s
+.PHONY : src/fileReader.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -165,6 +189,9 @@ help:
 	@echo "... src/dataProcessing.o"
 	@echo "... src/dataProcessing.i"
 	@echo "... src/dataProcessing.s"
+	@echo "... src/fileReader.o"
+	@echo "... src/fileReader.i"
+	@echo "... src/fileReader.s"
 .PHONY : help
 
 

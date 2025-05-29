@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/src/main.cpp" "CMakeFiles/main_app.dir/src/main.cpp.o" "gcc" "CMakeFiles/main_app.dir/src/main.cpp.o.d"
+  "/home/uditagrawal/Documents/Floating-Point-Compression/app/src/main.cpp" "CMakeFiles/main_app.dir/src/main.cpp.o" "gcc" "CMakeFiles/main_app.dir/src/main.cpp.o.d"
   "" "main_app" "gcc" "CMakeFiles/main_app.dir/link.d"
   )
 

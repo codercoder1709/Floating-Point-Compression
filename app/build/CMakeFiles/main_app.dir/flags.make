@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/app/include -I/home/uditagrawal/Documents/researchIntern/branchone/DigitalTwin/lib/include
+CXX_INCLUDES = -I/home/uditagrawal/Documents/Floating-Point-Compression/app/include -I/home/uditagrawal/Documents/Floating-Point-Compression/lib/include
 
 CXX_FLAGS = -std=gnu++17
 
