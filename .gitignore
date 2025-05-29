@@ -1,9 +1,26 @@
-dataset/largeVolume/
-build/
+# Ignore all build directories recursively
+**/build/
+
+# Ignore object files and static/shared libs
 *.o
 *.a
 *.so
+
+# Ignore CMake artifacts
+CMakeCache.txt
+CMakeFiles/
+*.cmake
+cmake_install.cmake
+Makefile
+**/CMakeFiles/
+**/CMakeCache.txt
+**/Makefile
+**/cmake_install.cmake
+
+# Ignore swap and system files
 *.swp
 *.log
-*.cmake
 *.DS_Store
+
+# Ignore datasets (optional if large or sensitive)
+dataset/largeVolume/
