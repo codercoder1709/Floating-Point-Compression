@@ -1,3 +1,0 @@
-/home/uditagrawal/Documents/Floating-Point-Compression/lib/build/CMakeFiles/dataProcessing.dir
-/home/uditagrawal/Documents/Floating-Point-Compression/lib/build/CMakeFiles/edit_cache.dir
-/home/uditagrawal/Documents/Floating-Point-Compression/lib/build/CMakeFiles/rebuild_cache.dir
