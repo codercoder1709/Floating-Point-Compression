@@ -1,3 +1,6 @@
+// 
+    Note: this is sample dataset file link to actual dataset is given in the readme of this folder only 
+//
 location,Basel
 lat,47.75000
 lon,7.50000
@@ -28,3 +31,8 @@ timestamp,Basel Temperature [2 m elevation corrected]
 20240101T1700,5.7202454
 20240101T1800,5.2602453
 20240101T1900,5.420245
+20240101T2000,5.110245
+20240101T2100,5.3102455
+20240101T2200,5.6002455
+20240101T2300,5.8302455
+20240102T0000,6.1602454
